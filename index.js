@@ -10,13 +10,15 @@ import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser';
 import { verifyUserInfo } from './middlewares/verifyUser.js';
 
+
+
 export const app = express();
 app.use(cookieParser())
 const client = new PrismaClient();
 app.use(express.json())
 app.use(cors({
-    // origin:'https://blogit-front-end-eesk.vercel.app',
-    origin:'http://localhost:5173',
+    origin:'https://blogit-front-end-eesk.vercel.app',
+    // origin:'http://localhost:5173',
     methods:['POST','GET','PUT','PATCH','DELETE'],
     credentials:true
   }));
@@ -107,8 +109,9 @@ app.post('/auth/login',async(req,res)=>{
 
 })
 
-app.get('/user/:${userId}', verifyUser, async(req,res)=>{
-    const userId = req.user.userId
+app.get('/auth/profile', verifyUserInfo, async(req,res)=>{
+    const userId= req.user?.userId;
+    
     try {
         const user = await client.user.findFirst({
             where:{
@@ -128,6 +131,34 @@ app.get('/user/:${userId}', verifyUser, async(req,res)=>{
     }
 })
 
+app.patch('/auth/updateprofile',verifyUserInfo, async(req,res)=>{
+    const userId= req.user?.userId;
+    const {firstName,lastName,emailAddress,userName} = req.body;
+    try {
+        const user = await client.user.update({
+            where:{
+                userId
+            },
+            data: {
+                firstName: firstName && firstName,
+                lastName: lastName && lastName,
+                emailAddress: emailAddress && emailAddress,
+                userName: userName && userName            }
+        })   
+        res.status(200) .json({
+            message: "User updated successfully",
+            user
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            message: "An error occurred",
+            status:"Fail",
+            data: error
+        })
+        
+    }
+})
 
 
 
