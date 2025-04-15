@@ -15,7 +15,8 @@ app.use(cookieParser())
 const client = new PrismaClient();
 app.use(express.json())
 app.use(cors({
-    origin:'https://blogit-front-end-eesk.vercel.app',
+    // origin:'https://blogit-front-end-eesk.vercel.app',
+    origin:'http://localhost:5173',
     methods:['POST','GET','PUT','PATCH','DELETE'],
     credentials:true
   }));
@@ -47,6 +48,7 @@ app.post('/auth/register',[verifyUser, verifyUserDetails, checkPasswordStrength 
    }
     
 })
+
 
 
 app.post('/auth/login',async(req,res)=>{
@@ -104,6 +106,30 @@ app.post('/auth/login',async(req,res)=>{
     }
 
 })
+
+app.get('/user/:${userId}', verifyUser, async(req,res)=>{
+    const userId = req.user.userId
+    try {
+        const user = await client.user.findFirst({
+            where:{
+                userId
+            }
+        })   
+        res.status(200) .json({
+            message: "User fetched successfully",
+            data: user
+        })
+        
+    } catch (error) {
+        res.json({
+            message: "An error occurred",
+            status:"Fail"
+        })        
+    }
+})
+
+
+
 
 app.post('/blog/post',verifyUserInfo, async (req,res)=>{
     const userId = req.user.userId;
@@ -270,4 +296,6 @@ app.delete('/blog/post/:blogId',verifyUserInfo, async(req,res)=>{
     }
 
 })
+
+
 
