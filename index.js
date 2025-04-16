@@ -17,8 +17,10 @@ app.use(cookieParser())
 const client = new PrismaClient();
 app.use(express.json())
 app.use(cors({
-    origin:'https://blogit-front-end-eesk.vercel.app',
-    // origin:'http://localhost:5173',
+    
+    origin:['http://localhost:5173',
+        'https://blogit-front-end-eesk.vercel.app',
+    ],
     methods:['POST','GET','PUT','PATCH','DELETE'],
     credentials:true
   }));
