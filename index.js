@@ -100,7 +100,7 @@ app.post('/auth/login',async(req,res)=>{
 
         const token = jwt.sign(payload,process.env.JWT_SECRET_KEY,{})
 
-        res.status(200).cookie('token',token).json({
+        res.status(200).cookie('token',token,{httpOnly:true,sameSite:none,secure:true}).json({
             message:"Login successful",
             status:"Success",
             data:user
