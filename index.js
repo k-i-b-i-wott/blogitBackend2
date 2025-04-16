@@ -18,9 +18,8 @@ const client = new PrismaClient();
 app.use(express.json())
 app.use(cors({
     
-    origin:['http://localhost:5173',
-        'https://blogit-front-end-eesk.vercel.app',
-        'https://blogit-front-end-dmbs.vercel.app'
+    origin:[
+        'https://blogit-front-end-eesk.vercel.app'
     ],
     methods:['POST','GET','PUT','PATCH','DELETE'],
     credentials:true
@@ -99,7 +98,7 @@ app.post('/auth/login',async(req,res)=>{
         }
 
         const token = jwt.sign(payload,process.env.JWT_SECRET_KEY,{})
-
+        
         res.status(200).cookie('token',token,{httpOnly:true,sameSite:none,secure:true}).json({
             message:"Login successful",
             status:"Success",
