@@ -20,6 +20,7 @@ app.use(cors({
     
     origin:['http://localhost:5173',
         'https://blogit-front-end-eesk.vercel.app',
+        'https://blogit-front-end-dmbs.vercel.app'
     ],
     methods:['POST','GET','PUT','PATCH','DELETE'],
     credentials:true
