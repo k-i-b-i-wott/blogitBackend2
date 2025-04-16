@@ -18,7 +18,8 @@ const client = new PrismaClient();
 app.use(express.json())
 app.use(cors({
     
-    origin:[
+    origin:[ 
+        'http://localhost:5173',
         'https://blogit-front-end-eesk.vercel.app'
     ],
     methods:['POST','GET','PUT','PATCH','DELETE'],
@@ -163,6 +164,47 @@ app.patch('/auth/updateprofile',verifyUserInfo, async(req,res)=>{
     }
 })
 
+app.patch('/auth/updatepassword',[verifyUserInfo], async(req,res)=>{
+    const userId= req.user?.userId;
+    const {oldPassword,newPassword} = req.body;
+    try {
+        const user = await client.user.findFirst({
+            where:{
+                userId
+            }
+        })   
+        const passwordMatch = await bcrypt.compare(oldPassword,user.password)
+        if(!passwordMatch){
+            return res.status(401).json({
+                message:"Invalid password",
+                status:"fail",
+            })
+        }
+        const hashedPassword = await bcrypt.hash(newPassword,12);
+        const updatedUser = await client.user.update({
+            where:{
+                userId
+            },
+            data: {
+                password:hashedPassword
+            }
+        })   
+        res.status(200) .json({
+            message: "Password updated successfully",
+            updatedUser
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            message: "An error occurred",
+            status:"Fail",
+            data: error
+        })
+        
+    }
+})
+            
+            
 
 
 app.post('/blog/post',verifyUserInfo, async (req,res)=>{
