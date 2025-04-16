@@ -113,7 +113,8 @@ app.post('/auth/login',async(req,res)=>{
 })
 
 app.get('/auth/profile', verifyUserInfo, async(req,res)=>{
-    const userId= req.user?.userId;
+    const userId= req.user.userId;
+    console.log(userId)
     
     try {
         const user = await client.user.findFirst({
