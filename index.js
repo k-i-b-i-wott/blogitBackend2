@@ -327,6 +327,49 @@ app.get('/blog/post',verifyUserInfo, async(req,res)=>{
     }
 })
 
+app.get('/blog/latest',verifyUserInfo, async(req,res)=>{
+    try {
+        const latestBlogs = await client.blogs.findMany({
+            where: {
+                isDeleted:false
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            take: 10,
+            
+            include: {
+                user:{
+                    select: {
+                        userName: true,
+                        
+                    }
+                }
+                
+            }
+
+            
+        })
+        if(!latestBlogs || latestBlogs .length === 0){
+            return res.status(404).json({
+                message:"No blogs available",
+                status:"fail",
+            })
+        }
+        res.status(200).json({
+            message:"Latest posts fetched successfully",
+            status:"Success",
+            data:latestBlogs
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            message:"Error fetching the latest posts",
+            status :"fail",
+        })        
+    }
+})
+
 app.patch('/blog/post/:blogId',verifyUserInfo, async(req,res)=>{
 
     const {blogTitle, blogExcerpt, blogBody}= req.body
